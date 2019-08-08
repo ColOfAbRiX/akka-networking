@@ -1,23 +1,37 @@
 ThisBuild / name         := "akka-quarantine"
 ThisBuild / organization := "com.example"
 ThisBuild / version      := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.0"
+ThisBuild / scalaVersion := "2.12.4"
 
-lazy val global = project
-  .in(file("."))
-  .settings(
+Global / cancelable      := true
+
+lazy val commonSettings = Seq(
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor" % "2.5.19",
+    "com.typesafe.akka" %% "akka-remote" % "2.5.19"
   )
+)
+
+lazy val root = (project in file("."))
   .aggregate(
-    consumer,
-    producer
+    consumer, producer
+  )
+
+lazy val common = (project in file("common"))
+  .settings(
+    name := "common"
   )
 
 lazy val consumer = (project in file("consumer"))
+  .dependsOn(common)
   .settings(
-    name := "consumer"
+    name := "consumer",
+    commonSettings
   )
 
 lazy val producer = (project in file("producer"))
+  .dependsOn(common)
   .settings(
-    name := "producer"
+    name := "producer",
+    commonSettings
   )
