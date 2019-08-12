@@ -1,11 +1,11 @@
 package com.example
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Props}
 
 object Main extends App {
 
   val system: ActorSystem = ActorSystem("akka-consumer-system")
 
-  val consumer: ActorRef = system.actorOf(ConsumerActor.props(), "consumer-actor")
+  val consumer: ActorRef = system.actorOf(Props(new ConsumerActor()), "consumer-actor")
 
 }

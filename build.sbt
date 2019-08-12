@@ -1,6 +1,6 @@
 ThisBuild / name         := "akka-quarantine"
 ThisBuild / organization := "com.example"
-ThisBuild / version      := "0.1.0-SNAPSHOT"
+ThisBuild / version      := "1.0.0"
 ThisBuild / scalaVersion := "2.12.4"
 
 Global / cancelable      := true

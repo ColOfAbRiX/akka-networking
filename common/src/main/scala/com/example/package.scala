@@ -2,12 +2,12 @@ package com
 
 package object example {
 
-  sealed trait ProducerMessage
-  case object StartProducing extends ProducerMessage
-  case object StopProducing extends ProducerMessage
+  case object StartProducing
+  case object StopProducing
 
-  sealed trait ConsumerMessage
   case class NewProduct(product: String)
   case object NoMoreProducts
+
+  case object Tick
 
 }
