@@ -1,6 +1,7 @@
-package com.example
+package com.example.producer
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+
 
 object Main extends App {
 

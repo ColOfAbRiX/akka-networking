@@ -1,4 +1,4 @@
-package com.example
+package com.example.consumer
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 

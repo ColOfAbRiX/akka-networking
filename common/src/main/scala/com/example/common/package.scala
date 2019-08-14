@@ -1,6 +1,8 @@
-package com
+package com.example
 
-package object example {
+import scala.concurrent.duration._
+
+package object common {
 
   case object StartProducing
   case object StopProducing
@@ -9,5 +11,7 @@ package object example {
   case object NoMoreProducts
 
   case object Tick
+
+  val akkaTimeout: FiniteDuration = 100 millisecond
 
 }
