@@ -1,4 +1,4 @@
-package com.example.producer
+package com.colofabrix.scala.akkanetworking.producer
 
 import scala.concurrent.duration._
 import java.util.Random
@@ -6,7 +6,7 @@ import java.util.Random
 import akka.actor.{Actor, ActorLogging, ActorRef, Timers}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
-import com.example.common._
+import com.colofabrix.scala.akkanetworking.common._
 
 
 class DeliveryActor(val consumer: ActorRef) extends Actor with Timers with ActorLogging {

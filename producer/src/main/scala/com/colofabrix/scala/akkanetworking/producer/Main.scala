@@ -1,4 +1,4 @@
-package com.example.producer
+package com.colofabrix.scala.akkanetworking.producer
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 

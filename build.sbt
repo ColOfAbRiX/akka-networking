@@ -2,8 +2,8 @@
  * Preamble
  */
 
-ThisBuild / name         := "akka-quarantine"
-ThisBuild / organization := "com.example"
+ThisBuild / name         := "akka-networking"
+ThisBuild / organization := "com.colofabrix.scala.akkanetworking"
 ThisBuild / version      := "1.0.0"
 ThisBuild / scalaVersion := "2.12.4"
 
@@ -36,8 +36,8 @@ lazy val commonSettings = Seq(
  * Projects
  */
 
-lazy val akkaQuarantine = (project in file("."))
-  .settings(name := "akka-quarantine")
+lazy val akkaNetworking = (project in file("."))
+  .settings(name := "akka-networking")
   .aggregate(
     common, consumer, producer
   )
@@ -51,7 +51,7 @@ lazy val consumer: Project = (project in file("consumer"))
   .settings(
     name := "consumer",
     commonSettings,
-    mainClass in assembly := Some("com.example.consumer.Main"),
+    mainClass in assembly := Some("com.colofabrix.scala.akkanetworking.consumer.Main"),
     packageName in Docker := "akka-consumer",
     dockerExposedPorts ++= Seq(2553)
   )
@@ -62,7 +62,7 @@ lazy val producer: Project = (project in file("producer"))
   .settings(
     name := "producer",
     commonSettings,
-    mainClass in assembly := Some("com.example.producer.Main"),
+    mainClass in assembly := Some("com.colofabrix.scala.akkanetworking.producer.Main"),
     packageName in Docker := "akka-producer",
     dockerExposedPorts ++= Seq(2552)
   )

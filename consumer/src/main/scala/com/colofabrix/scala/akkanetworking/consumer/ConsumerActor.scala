@@ -1,11 +1,11 @@
-package com.example.consumer
+package com.colofabrix.scala.akkanetworking.consumer
 
 import java.util.Random
 
 import akka.actor.{Actor, ActorLogging}
 import akka.remote.AssociationErrorEvent
 import akka.util.Timeout
-import com.example.common._
+import com.colofabrix.scala.akkanetworking.common._
 
 
 class ConsumerActor() extends Actor with ActorLogging {

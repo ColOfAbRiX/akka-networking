@@ -1,4 +1,4 @@
-package com.example
+package com.colofabrix.scala.akkanetworking
 
 import scala.concurrent.duration._
 

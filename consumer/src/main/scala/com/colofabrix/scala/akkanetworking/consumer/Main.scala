@@ -1,4 +1,4 @@
-package com.example.consumer
+package com.colofabrix.scala.akkanetworking.consumer
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 
