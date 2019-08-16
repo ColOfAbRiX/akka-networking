@@ -5,8 +5,8 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 
 object Main extends App {
 
-  val system: ActorSystem = ActorSystem("akka-producer-system")
+  val system: ActorSystem = ActorSystem("producer-system")
 
-  val producer: ActorRef = system.actorOf(Props(new ProducerActor()), "producer-actor")
+  val producer: ActorRef = system.actorOf(ProducerActor.props(), "producer-actor")
 
 }

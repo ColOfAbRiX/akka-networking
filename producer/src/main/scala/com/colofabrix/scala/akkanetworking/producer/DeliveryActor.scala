@@ -6,17 +6,24 @@ import java.util.Random
 import akka.actor.{Actor, ActorLogging, ActorRef, Timers}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
+import akka.actor.Props
 import com.colofabrix.scala.akkanetworking.common._
 
 
-class DeliveryActor(val consumer: ActorRef) extends Actor with Timers with ActorLogging {
+class DeliveryActor(val consumer: ActorRef)
+  extends Actor with Timers with ActorLogging {
 
-  private val products = Seq("CHARGER", "TABLE", "CAMERA", "PIANO", "GLASSES", "CORK", "KNIFE")
   private implicit val timeout: Timeout = Timeout(akkaTimeout)
 
+  private val products = Seq("CHARGER", "TABLE", "CAMERA", "PIANO", "GLASSES", "CORK", "KNIFE")
+  private def randomInterval = (new Random().nextInt(7) + 3) second
+
   override def preStart(): Unit = {
-    timers.startPeriodicTimer("produceTick", Tick, (new Random().nextInt(7) + 3) second)
+    super.preStart()
+    context.watch(self)
     context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+    log.info(s"Started new DeliveryActor ${self.path.name}")
+    timers.startPeriodicTimer("produceTick", Tick, randomInterval)
   }
 
   override def receive: Receive = {
@@ -30,10 +37,16 @@ class DeliveryActor(val consumer: ActorRef) extends Actor with Timers with Actor
       sender ! NoMoreProducts
       context.stop(self)
 
-    case error: AssociationEvent =>
-      log.error(s"Actor ${self.path.name} received AssociationEvent: $error")
+    case assEvent: AssociationEvent =>
+      log.error(s"Actor ${self.path.name} received AssociationEvent: $assEvent")
 
     case any =>
       log.warning(s"Actor ${self.path.name} received UNHANDLED message: $any")
   }
+}
+
+object DeliveryActor {
+
+  def props(consumer: ActorRef) = Props(classOf[DeliveryActor], consumer)
+
 }
