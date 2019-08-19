@@ -20,7 +20,6 @@ class DeliveryActor(val consumer: ActorRef)
 
   override def preStart(): Unit = {
     super.preStart()
-    context.watch(self)
     context.system.eventStream.subscribe(self, classOf[AssociationEvent])
     log.info(s"Started new DeliveryActor ${self.path.name}")
     timers.startPeriodicTimer("produceTick", Tick, randomInterval)
@@ -33,12 +32,9 @@ class DeliveryActor(val consumer: ActorRef)
       consumer ! NewProduct(product)
 
     case StopProducing =>
-      log.info(s"Received request to STOP producing")
+      log.info(s"Received from ${sender.path.name} request to STOP producing")
       sender ! NoMoreProducts
       context.stop(self)
-
-    case assEvent: AssociationEvent =>
-      log.error(s"Actor ${self.path.name} received AssociationEvent: $assEvent")
 
     case any =>
       log.warning(s"Actor ${self.path.name} received UNHANDLED message: $any")

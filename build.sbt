@@ -5,7 +5,7 @@
 ThisBuild / name         := "akka-networking"
 ThisBuild / organization := "com.colofabrix.scala.akkanetworking"
 ThisBuild / version      := "1.0.0"
-ThisBuild / scalaVersion := "2.12.4"
+ThisBuild / scalaVersion := "2.12.8"
 
 
 /*

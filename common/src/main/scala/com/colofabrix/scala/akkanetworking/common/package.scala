@@ -1,7 +1,5 @@
 package com.colofabrix.scala.akkanetworking
 
-import scala.concurrent.duration._
-
 package object common {
 
   case object StartProducing
@@ -12,6 +10,6 @@ package object common {
 
   case object Tick
 
-  val akkaTimeout: FiniteDuration = 100 millisecond
+  implicit val akkaTimeout = Config.akkaTimeout
 
 }
