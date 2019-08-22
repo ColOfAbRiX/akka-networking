@@ -10,18 +10,17 @@ import akka.actor.Props
 import com.colofabrix.scala.akkanetworking.common._
 
 
-class DeliveryActor(val consumer: ActorRef)
-  extends Actor with Timers with ActorLogging {
+class DeliveryActor(val consumer: ActorRef) extends Actor with Timers with ActorLogging {
 
   private implicit val timeout: Timeout = Timeout(akkaTimeout)
 
   private val products = Seq("CHARGER", "TABLE", "CAMERA", "PIANO", "GLASSES", "CORK", "KNIFE")
-  private def randomInterval = (new Random().nextInt(7) + 3) second
+  private def randomInterval = (new Random().nextInt(4) + 1) second
 
   override def preStart(): Unit = {
     super.preStart()
     // Getting all association messages
-    context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+    //context.system.eventStream.subscribe(self, classOf[AssociationEvent])
     log.info(s"Started new DeliveryActor ${self.path.name}")
     // Start a scheduler that at each ticks requests this actor to sends a product
     timers.startPeriodicTimer("produceTick", Tick, randomInterval)

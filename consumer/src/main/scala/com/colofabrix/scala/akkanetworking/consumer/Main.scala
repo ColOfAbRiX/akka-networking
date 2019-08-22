@@ -3,6 +3,7 @@ package com.colofabrix.scala.akkanetworking.consumer
 import com.colofabrix.scala.akkanetworking.common.Config
 import akka.actor.{ActorRef, ActorSystem, Props}
 
+
 object Main extends App {
 
   val system: ActorSystem = ActorSystem(Config.Consumer.system)

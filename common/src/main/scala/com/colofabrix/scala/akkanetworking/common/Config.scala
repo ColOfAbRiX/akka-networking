@@ -20,6 +20,11 @@ object Config {
     val path: String   = s"akka.tcp://$system@$host:$port/user/$actor"
   }
 
+  object DiscoverRetry {
+    val retries: Int = 60
+    val delay: FiniteDuration = 3 seconds
+  }
+
   val akkaTimeout: FiniteDuration = 100 millisecond
 
 }

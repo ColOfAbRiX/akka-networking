@@ -7,28 +7,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
 import scala.util.Failure
 
+import com.colofabrix.scala.akkanetworking.common._
 import akka.actor.{Actor, ActorRef, ActorLogging, Props}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
-import com.colofabrix.scala.akkanetworking.common._
-import akka.actor.PoisonPill
+
 
 /**
  * Consumer actor that looks for a producer, asks for products and when it's satisfied it stops
  */
-class ConsumerActor()
-  extends Actor with ActorLogging with FutureRetry {
+class ConsumerActor() extends Actor with ActorLogging with FutureRetryActor {
 
-  private implicit val timeout: Timeout = Timeout(akkaTimeout)
+  private implicit val timeout = Timeout(akkaTimeout)
 
   override def preStart(): Unit = {
     super.preStart()
 
     // Getting all association messages
-    context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+    //context.system.eventStream.subscribe(self, classOf[AssociationEvent])
 
     // Discovering of the producer retrying a few times till we succeed
-    retry(3 seconds, 60) { () =>
+    retry(Config.DiscoverRetry.retries, Config.DiscoverRetry.delay) {
       context.actorSelection(Config.Producer.path).resolveOne()
     }
     .onComplete {
@@ -38,7 +37,7 @@ class ConsumerActor()
         producer ! StartProducing
 
       case Failure(failure) =>
-        log.info(s"Producer not found, retrying.")
+        log.error(s"Producer not found, retrying.")
     }
   }
 
@@ -49,7 +48,7 @@ class ConsumerActor()
       log.info(s"New product received from ${sender.path.name}: $product")
 
       val updatedProducts = product +: products
-      val maxProducts = new Random().nextInt(20) + 5
+      val maxProducts = new Random().nextInt(10) + 5
 
       if( updatedProducts.length > maxProducts ) {
         log.info(s"Had enough products, ask producer ${sender.path.name} to stop")

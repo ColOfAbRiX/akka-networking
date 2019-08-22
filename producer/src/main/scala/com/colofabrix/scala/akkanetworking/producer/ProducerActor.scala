@@ -9,15 +9,14 @@ import com.colofabrix.scala.akkanetworking.common._
  * Producer actor that waits for consumers to ask for products and then creates a new actor per
  * consumer that is responsible to deliver the product
  */
-class ProducerActor()
-  extends Actor with ActorLogging {
+class ProducerActor() extends Actor with ActorLogging {
 
   private implicit val timeout: Timeout = Timeout(akkaTimeout)
 
   override def preStart(): Unit = {
     super.preStart()
     // Getting all association messages
-    context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+    //context.system.eventStream.subscribe(self, classOf[AssociationEvent])
   }
 
   override def receive: Receive = {

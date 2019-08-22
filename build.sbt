@@ -36,16 +36,24 @@ lazy val commonSettings = Seq(
  * Projects
  */
 
-lazy val akkaNetworking = (project in file("."))
+lazy val akkaNetworking: Project = project
+  .in(file("."))
   .settings(name := "akka-networking")
   .aggregate(
-    common, consumer, producer
+    common,
+    consumer,
+    producer
   )
 
-lazy val common = (project in file("common"))
-  .settings(name := "common")
+lazy val common: Project = project
+  .in(file("common"))
+  .settings(
+    name := "common",
+    commonSettings
+  )
 
-lazy val consumer: Project = (project in file("consumer"))
+lazy val consumer: Project = project
+  .in(file("consumer"))
   .dependsOn(common)
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
@@ -56,7 +64,8 @@ lazy val consumer: Project = (project in file("consumer"))
     dockerExposedPorts ++= Seq(2553)
   )
 
-lazy val producer: Project = (project in file("producer"))
+lazy val producer: Project = project
+  .in(file("producer"))
   .dependsOn(common)
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
