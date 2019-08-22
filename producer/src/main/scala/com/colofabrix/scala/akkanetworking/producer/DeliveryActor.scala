@@ -20,18 +20,22 @@ class DeliveryActor(val consumer: ActorRef)
 
   override def preStart(): Unit = {
     super.preStart()
+    // Getting all association messages
     context.system.eventStream.subscribe(self, classOf[AssociationEvent])
     log.info(s"Started new DeliveryActor ${self.path.name}")
+    // Start a scheduler that at each ticks requests this actor to sends a product
     timers.startPeriodicTimer("produceTick", Tick, randomInterval)
   }
 
   override def receive: Receive = {
     case Tick =>
+      // At each "Tick" I send a new random product
       val product = products(new Random().nextInt(products.length))
       log.info(s"Sending to ${consumer.path.name} product $product")
       consumer ! NewProduct(product)
 
     case StopProducing =>
+      // When requested to stop, inform the consumer and stop the actor
       log.info(s"Received from ${sender.path.name} request to STOP producing")
       sender ! NoMoreProducts
       context.stop(self)

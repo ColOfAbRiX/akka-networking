@@ -7,14 +7,18 @@ import scala.concurrent.duration._
 trait FutureRetry {
 
   protected def retry[T](
-    f: Unit => Future[T], delay: FiniteDuration, retries: Int)(
+    delay: FiniteDuration,
+    retries: Int)(
+    f: () => Future[T])(
     implicit ec: ExecutionContext
   ): Future[T] = {
+
     f() recoverWith {
       case _ if retries > 0 =>
         Thread.sleep(delay.toMillis)
-        retry(f, delay, retries - 1)
+        retry(delay, retries - 1)(f)
     }
+
   }
 
 }

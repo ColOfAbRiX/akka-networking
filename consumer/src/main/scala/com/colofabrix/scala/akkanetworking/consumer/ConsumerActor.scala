@@ -11,54 +11,63 @@ import akka.actor.{Actor, ActorRef, ActorLogging, Props}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
 import com.colofabrix.scala.akkanetworking.common._
+import akka.actor.PoisonPill
 
-
+/**
+ * Consumer actor that looks for a producer, asks for products and when it's satisfied it stops
+ */
 class ConsumerActor()
   extends Actor with ActorLogging with FutureRetry {
 
   private implicit val timeout: Timeout = Timeout(akkaTimeout)
 
-  private val lookForProducer = { _: Unit =>
-    context.actorSelection(Config.Producer.path).resolveOne()
-  }
+  override def preStart(): Unit = {
+    super.preStart()
 
-  retry(lookForProducer, 3 seconds, 100)
+    // Getting all association messages
+    context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+
+    // Discovering of the producer retrying a few times till we succeed
+    retry(3 seconds, 60) { () =>
+      context.actorSelection(Config.Producer.path).resolveOne()
+    }
     .onComplete {
       case Success(producer) =>
         log.info(s"Found producer ${producer.path.name} and asking for products")
+        // When a producer is found, request products
         producer ! StartProducing
 
       case Failure(failure) =>
         log.info(s"Producer not found, retrying.")
     }
-
-  private val products = collection.mutable.ArrayBuffer[String]()
-
-  override def preStart(): Unit = {
-    super.preStart()
-    context.system.eventStream.subscribe(self, classOf[AssociationEvent])
   }
 
-  override def receive: Receive = {
+  override def receive: Receive = receiveAndUpdate(Seq.empty)
+
+  private def receiveAndUpdate(products: Seq[String]): Receive = {
     case NewProduct(product) =>
-    println(self.path.toString())
       log.info(s"New product received from ${sender.path.name}: $product")
 
-      products += product
+      val updatedProducts = product +: products
+      val maxProducts = new Random().nextInt(20) + 5
 
-      if( product.length > 5 + new Random().nextInt(20) ) {
+      if( updatedProducts.length > maxProducts ) {
         log.info(s"Had enough products, ask producer ${sender.path.name} to stop")
         sender ! StopProducing
+      } else {
+        // This method is used to keep the Actor functional
+        context.become(receiveAndUpdate(updatedProducts))
       }
 
-    case NoMoreProducts =>
-      log.info(s"Producer ${sender.path.name} terminated the products")
-      log.info(s"Stored all these products: ${products.mkString(", ")}")
-      context.stop(self)
+      case NoMoreProducts =>
+        log.info(s"Producer ${sender.path.name} terminated the products")
+        log.info(s"Stored all these products: ${products.mkString(", ")}")
+        log.info(s"Now stopping...")
+        context.stop(self)
 
-    case any  =>
-      log.warning(s"Actor ${self.path.name} received UNHANDLED message: $any")
-  }
+      case any  =>
+        log.warning(s"Actor ${self.path.name} received UNHANDLED message: $any")
+    }
 
 }
 
