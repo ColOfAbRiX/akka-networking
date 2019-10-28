@@ -1,4 +1,4 @@
-package com.colofabrix.scala.akkanetworking.consumer
+package com.colofabrix.scala.akkanetworking.common
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

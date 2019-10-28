@@ -25,6 +25,11 @@ object Config {
     val delay: FiniteDuration = 3 seconds
   }
 
+  object EtcdConfig {
+    val address = "127.0.0.1"
+    val port    = 2379
+  }
+
   val akkaTimeout: FiniteDuration = 100 millisecond
 
 }

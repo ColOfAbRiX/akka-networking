@@ -28,6 +28,7 @@ class ConsumerActor() extends Actor with ActorLogging with FutureRetryActor {
 
     // Discovering of the producer retrying a few times till we succeed
     retry(Config.DiscoverRetry.retries, Config.DiscoverRetry.delay) {
+      log.info("Resolving producer...")
       context.actorSelection(Config.Producer.path).resolveOne()
     }
     .onComplete {
@@ -39,6 +40,8 @@ class ConsumerActor() extends Actor with ActorLogging with FutureRetryActor {
       case Failure(failure) =>
         log.error(s"Producer not found, retrying.")
     }
+
+    log.debug(s"Started new ${this.getClass().getSimpleName()} ${self.path.name}")
   }
 
   override def receive: Receive = receiveAndUpdate(Seq.empty)

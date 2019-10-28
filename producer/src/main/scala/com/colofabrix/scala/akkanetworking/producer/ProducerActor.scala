@@ -1,8 +1,11 @@
 package com.colofabrix.scala.akkanetworking.producer
 
+import scala.concurrent.duration._
+
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
+
 import com.colofabrix.scala.akkanetworking.common._
 
 /**
@@ -15,8 +18,16 @@ class ProducerActor() extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     super.preStart()
+
+    // Create service registration actor
+    val serviceRegistrationActor = context.actorOf(
+      ServiceRegistrationActor.props("producer", self, 30 seconds)
+    )
+    context.watch(serviceRegistrationActor)
+
     // Getting all association messages
     //context.system.eventStream.subscribe(self, classOf[AssociationEvent])
+    log.debug(s"Started new ${this.getClass.getSimpleName} ${self.path.name}")
   }
 
   override def receive: Receive = {

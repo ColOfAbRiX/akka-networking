@@ -7,6 +7,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Timers}
 import akka.remote.AssociationEvent
 import akka.util.Timeout
 import akka.actor.Props
+
 import com.colofabrix.scala.akkanetworking.common._
 
 
@@ -21,9 +22,9 @@ class DeliveryActor(val consumer: ActorRef) extends Actor with Timers with Actor
     super.preStart()
     // Getting all association messages
     //context.system.eventStream.subscribe(self, classOf[AssociationEvent])
-    log.info(s"Started new DeliveryActor ${self.path.name}")
     // Start a scheduler that at each ticks requests this actor to sends a product
     timers.startPeriodicTimer("produceTick", Tick, randomInterval)
+    log.debug(s"Started new ${this.getClass().getSimpleName()} ${self.path.name}")
   }
 
   override def receive: Receive = {
